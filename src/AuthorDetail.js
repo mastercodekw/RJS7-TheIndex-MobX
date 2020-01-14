@@ -4,6 +4,8 @@ import axios from "axios";
 // Components
 import BookTable from "./BookTable";
 import Loading from "./Loading";
+import { observer } from "mobx-react";
+import bookStore from "./stores/bookStore";
 
 const instance = axios.create({
   baseURL: "https://the-index-api.herokuapp.com"
@@ -53,11 +55,11 @@ class AuthorDetail extends Component {
               alt={authorName}
             />
           </div>
-          <BookTable books={author.books} />
+          <BookTable books={bookStore.filterBooksByAuthor(author.id)} />
         </div>
       );
     }
   }
 }
 
-export default AuthorDetail;
+export default observer(AuthorDetail);

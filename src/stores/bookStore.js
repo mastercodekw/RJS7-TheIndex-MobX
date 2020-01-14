@@ -12,8 +12,6 @@ class BookStore {
 
   query = "";
 
-  filteredColor = "";
-
   fetchBooks = async () => {
     try {
       const res = await instance.get("/api/books/");
@@ -27,10 +25,6 @@ class BookStore {
   get filteredBooks() {
     let books = this.books;
 
-    if (this.filteredColor && this.filteredColor !== "") {
-      books = books.filter(book => book.color === this.filteredColor);
-    }
-
     if (this.query && this.query !== "") {
       books = books.filter(book =>
         book.title.toLowerCase().includes(this.query.toLowerCase())
@@ -40,20 +34,36 @@ class BookStore {
     return books;
   }
 
-  getBookById = id => this.books.find(book => +book.id === +id);
-
   borrowBook = id => {
     const book = this.getBookById(id);
     book.available = !book.available;
   };
+
+  filterBooksByColor = color => {
+    let books = this.books.filter(book => book.color === color);
+
+    if (this.query && this.query !== "") {
+      books = books.filter(book =>
+        book.title.toLowerCase().includes(this.query.toLowerCase())
+      );
+    }
+
+    return books;
+  };
+
+  filterBooksByAuthor = authorID =>
+    this.books.filter(book =>
+      book.authors.some(author => author.id === authorID)
+    );
+
+  getBookById = id => this.books.find(book => +book.id === +id);
 }
 
 decorate(BookStore, {
   books: observable,
   loading: observable,
   query: observable,
-  filteredBooks: computed,
-  filteredColor: observable
+  filteredBooks: computed
 });
 
 const bookStore = new BookStore();
